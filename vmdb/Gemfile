@@ -5,11 +5,6 @@
 # Load platform specific Gemfile
 MiqBundler.include_gemfile("Gemfile.mingw.rb", binding) if RUBY_PLATFORM =~ /mingw/
 
-# Gems excluded from the appliance are now in their own file to simplify things
-if File.exists?(File.expand_path("Gemfile.appliance_excludes.rb", File.dirname(__FILE__)))
-  MiqBundler.include_gemfile("Gemfile.appliance_excludes.rb", binding)
-end
-
 # Load developer specific Gemfile
 #   Developers can create a file called Gemfile.dev.rb containing any gems for
 #   their local development.  This can be any gem under evaluation that other
