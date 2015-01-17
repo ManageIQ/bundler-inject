@@ -2,9 +2,6 @@
 # Custom Gemfile modifications
 #
 
-# Load platform specific Gemfile
-MiqBundler.include_gemfile("Gemfile.mingw.rb", binding) if RUBY_PLATFORM =~ /mingw/
-
 # Load developer specific Gemfile
 #   Developers can create a file called Gemfile.dev.rb containing any gems for
 #   their local development.  This can be any gem under evaluation that other
