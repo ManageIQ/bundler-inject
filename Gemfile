@@ -7,11 +7,8 @@
 #   their local development.  This can be any gem under evaluation that other
 #   developers may not need or may not easily install, such as rails-dev-boost,
 #   any git based gem, and compiled gems like rbtrace or memprof.
-if File.exist?(File.expand_path("Gemfile.dev.rb", File.dirname(__FILE__)))
-  MiqBundler.include_gemfile("Gemfile.dev.rb", binding)
-end
+dev_gemfile = File.expand_path("Gemfile.dev.rb", __dir__)
+eval_gemfile(dev_gemfile) if File.exist?(dev_gemfile)
 
-# Load plugins that are packaged as Gems
-Dir["#{File.dirname(__FILE__)}/bundler.d/*.rb"].each do |bundle|
-  MiqBundler.include_gemfile(bundle, binding)
-end
+# Load other additional Gemfiles
+Dir.glob("bundler.d/*.rb").each { |f| eval_gemfile(File.expand_path(f, __dir__)) }
