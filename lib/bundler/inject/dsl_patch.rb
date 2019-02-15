@@ -23,13 +23,18 @@ module Bundler
 
       def eval_gemfile(gemfile, contents = nil, nested = false)
         super(gemfile, contents)
-        load_bundler_d(File.dirname(gemfile)) unless nested
+        return if nested
+        load_bundler_d(File.dirname(gemfile))
+        load_bundler_d(Dir.home)
       end
 
-      def load_bundler_d(gemfile_dir)
-        # Load other additional Gemfiles
-        #   Developers can create a file ending in .rb under bundler.d/ to specify additional development dependencies
-        Dir.glob(File.join(gemfile_dir, 'bundler.d/*.rb')).each { |f| eval_gemfile(File.expand_path(f, gemfile_dir, true)) }
+      private
+
+      def load_bundler_d(dir)
+        Dir.glob(File.join(dir, 'bundler.d/*.rb')).sort.each do |f|
+          puts "Injecting #{f}..."
+          eval_gemfile(f, nil, true)
+        end
       end
     end
   end
