@@ -2,7 +2,7 @@ module Bundler
   module Inject
     module DslPatch
       def override_gem(name, *args)
-        raise "Trying to override unknown gem #{name}" unless (dependency = dependencies.find { |d| d.name == name })
+        raise "Trying to override unknown gem #{name.inspect}" unless (dependency = dependencies.find { |d| d.name == name })
 
         removed_dependency = dependencies.delete(dependency)
         if removed_dependency.source.kind_of?(Bundler::Source::Git)
