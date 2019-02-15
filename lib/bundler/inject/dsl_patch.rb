@@ -11,7 +11,8 @@ module Bundler
           end
         end
 
-        calling_file = caller_locations.detect { |loc| !loc.path.include?("lib/bundler") }.path
+        calling_loc  = caller_locations.detect { |loc| !loc.path.include?("lib/bundler") }
+        calling_file = "#{calling_loc.path}:#{calling_loc.lineno}"
         calling_dir  = File.dirname(calling_file)
 
         args.last[:path] = File.expand_path(args.last[:path], calling_dir) if args.last.kind_of?(Hash) && args.last[:path]
