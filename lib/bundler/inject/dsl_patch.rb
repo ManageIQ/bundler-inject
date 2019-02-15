@@ -24,14 +24,14 @@ module Bundler
       def eval_gemfile(gemfile, contents = nil, nested = false)
         super(gemfile, contents)
         return if nested
-        load_bundler_d(File.dirname(gemfile))
-        load_bundler_d(Dir.home)
+        load_bundler_d(File.join(File.dirname(gemfile), "bundler.d"))
+        load_bundler_d(File.join(Dir.home, ".bundler.d"))
       end
 
       private
 
       def load_bundler_d(dir)
-        Dir.glob(File.join(dir, 'bundler.d/*.rb')).sort.each do |f|
+        Dir.glob(File.join(dir, '*.rb')).sort.each do |f|
           puts "Injecting #{f}..."
           eval_gemfile(f, nil, true)
         end
