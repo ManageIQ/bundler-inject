@@ -24,8 +24,8 @@ module Bundler
       def eval_gemfile(gemfile, contents = nil, nested = false)
         super(gemfile, contents)
         return if nested
-        load_bundler_d(File.join(File.dirname(gemfile), "bundler.d"))
         load_bundler_d(File.join(Dir.home, ".bundler.d"))
+        load_bundler_d(File.join(File.dirname(gemfile), "bundler.d"))
       end
 
       private
