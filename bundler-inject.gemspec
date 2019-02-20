@@ -7,8 +7,8 @@ Gem::Specification.new do |spec|
   spec.version       = Bundler::Inject::VERSION
   spec.authors       = ["ManageIQ Authors"]
 
-  spec.summary       = %q{Summary}
-  spec.description   = %q{Description}
+  spec.summary       = %q{A bundler plugin that allows extension of a project with personal and overridden gems}
+  spec.description   = %q{bundler-inject is a bundler plugin that allows a developer to extend a project with their own personal gems and/or override existing gems, without having to modify the Gemfile, thus avoiding accidental modification of git history.}
   spec.homepage      = "https://github.com/ManageIQ/bundler-inject"
   spec.license       = "Apache-2.0"
 
