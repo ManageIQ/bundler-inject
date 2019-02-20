@@ -23,7 +23,7 @@ module Bundler
 
       def to_definition(lockfile, unlock)
         calling_loc = caller_locations(1, 1).first
-        if calling_loc.path.include?("lib/bundler/dsl.rb") && calling_loc.base_label == "evaluate"
+        if calling_loc.path.include?("bundler/dsl.rb") && calling_loc.base_label == "evaluate"
           load_bundler_d(File.join(Dir.home, ".bundler.d"))
           load_bundler_d(File.join(File.dirname(lockfile), "bundler.d"))
         end
