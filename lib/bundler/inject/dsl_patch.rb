@@ -25,7 +25,9 @@ module Bundler
         calling_loc = caller_locations(1, 1).first
         if calling_loc.path.include?("bundler/dsl.rb") && calling_loc.base_label == "evaluate"
           load_bundler_d(File.join(Dir.home, ".bundler.d"))
-          load_bundler_d(File.join(File.dirname(lockfile), "bundler.d"))
+          @gemfiles.reverse_each do |gemfile|
+            load_bundler_d(File.join(File.dirname(gemfile), "bundler.d"))
+          end
         end
         super
       end
