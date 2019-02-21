@@ -2,7 +2,7 @@ module Bundler
   module Inject
     module DslPatch
       def override_gem(name, *args)
-        raise "Trying to override unknown gem #{name.inspect}" unless (dependency = dependencies.find { |d| d.name == name })
+        raise "Trying to override unknown gem #{name.inspect}" unless (dependency = find_dependency(name))
 
         removed_dependency = dependencies.delete(dependency)
         if removed_dependency.source.kind_of?(Bundler::Source::Git)
@@ -21,6 +21,19 @@ module Bundler
         end
       end
 
+      def ensure_gem(name, *args)
+        current = find_dependency(name)
+        if !current
+          gem(name, *args)
+        else
+          version, opts = split_version_opts(args)
+          version = [">= 0"] if version.empty?
+          if opts.any? || (version != [">= 0"] && Gem::Requirement.new(version) != current.requirement)
+            override_gem(name, *args)
+          end
+        end
+      end
+
       def to_definition(lockfile, unlock)
         calling_loc = caller_locations(1, 1).first
         if calling_loc.path.include?("bundler/dsl.rb") && calling_loc.base_label == "evaluate"
@@ -33,6 +46,14 @@ module Bundler
       end
 
       private
+
+      def find_dependency(name)
+        dependencies.find { |d| d.name == name }
+      end
+
+      def split_version_opts(args)
+        args.last.is_a?(Hash) ? [args[0..-2], args[-1]] : [args, {}]
+      end
 
       def load_bundler_d(dir)
         Dir.glob(File.join(dir, '*.rb')).sort.each do |f|

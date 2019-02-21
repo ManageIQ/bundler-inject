@@ -52,6 +52,26 @@ modifying the Gemfile and hoping we don't commit the changes, we can create a
 will output a warning to the screen to make us aware we are overriding, and
 then it will use the new definition.
 
+`override_gem` will raise an exception if the specified gem does not exist in
+the original Gemfile.
+
+### ensure_gem
+
+`ensure_gem` is an extra DSL command similar to `override_gem`, and primarily
+meant for the global override file.
+
+One issue with the global file is that it specifies a new gem with `gem`, but
+that gem already exists in the project you will get a nasty warning. Conversely,
+if it specifies an override with `override_gem`, but the gem does not exist in
+the project you will get an exception. To deal with these issues, you can use
+`ensure_gem` in your global file.
+
+`ensure_gem` works by checking if the gem is already in the dependency list, and
+comparing the options specified. If the dependency does not exist, it uses `gem`,
+otherwise if the options or version specified are significantly different, it
+will use `override_gem`, otherwise it will just do nothing, deferring to the
+original declaration.
+
 ## What is this sorcery?
 
 While this is technically a bundler plugin, bundler-inject does not use the
