@@ -17,7 +17,7 @@ module Bundler
 
         args.last[:path] = File.expand_path(args.last[:path], calling_dir) if args.last.kind_of?(Hash) && args.last[:path]
         gem(name, *args).tap do
-          warn "** override_gem: #{name}, #{args.inspect}, caller: #{calling_file}" unless ENV["RAILS_ENV"] == "production"
+          warn_override_gem(calling_file, name, args)
         end
       end
 
@@ -55,9 +55,22 @@ module Bundler
         args.last.is_a?(Hash) ? [args[0..-2], args[-1]] : [args, {}]
       end
 
+      def warn_override_gem(calling_file, name, args)
+        return if ENV["RAILS_ENV"] == "production"
+
+        version, opts = split_version_opts(args)
+        message = "** override_gem(#{name.inspect}"
+        message << ", #{version.inspect[1..-2]}" unless version.empty?
+        message << ", #{opts.inspect[1..-2]}" unless opts.empty?
+        message << ") at #{calling_file}"
+        message = "\e[33m#{message}\e[0m" if $stdout.tty?
+
+        warn message
+      end
+
       def load_bundler_d(dir)
         Dir.glob(File.join(dir, '*.rb')).sort.each do |f|
-          Bundler.ui.info "Injecting #{f}..."
+          Bundler.ui.debug "Injecting #{f}..."
           eval_gemfile(f)
         end
       end
