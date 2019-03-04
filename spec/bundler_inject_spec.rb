@@ -172,6 +172,67 @@ RSpec.describe Bundler::Inject do
     end
   end
 
+  shared_examples_for "bundle check/exec" do
+    context "bundle check/exec" do
+      let(:exec_command) do
+        %q{ruby -e "puts Bundler.environment.gems.select { |g| %w[rack rack-obama omg].include?(g.name) }.map { |g| [g.name, g.version.version] }.sort.inspect"}
+      end
+
+      describe "#gem" do
+        before do
+          write_bundler_d_file <<~F
+            gem "rack-obama"
+          F
+          write_global_bundler_d_file <<~F
+            gem "omg"
+          F
+          bundle(:update)
+        end
+
+        it "bundle check" do
+          bundle(:check, verbose: false)
+
+          expect(out).to eq "The Gemfile's dependencies are satisfied\n"
+          expect(err).to be_empty
+        end
+
+        it "bundle exec" do
+          bundle("exec #{exec_command}", verbose: false)
+
+          expect(out).to eq %Q{[["omg", "0.0.6"], ["rack", "2.0.6"], ["rack-obama", "0.1.1"]]\n}
+          expect(err).to be_empty
+        end
+      end
+
+      describe "#override_gem" do
+        before do
+          write_bundler_d_file <<~F
+            override_gem "rack", "=2.0.5"
+            gem "rack-obama"
+          F
+          write_global_bundler_d_file <<~F
+            gem "omg"
+          F
+          bundle(:update)
+        end
+
+        it "bundle check" do
+          bundle(:check, verbose: false)
+
+          expect(out).to eq "The Gemfile's dependencies are satisfied\n"
+          expect(err).to match %r{\A\*\* override_gem\("rack", "=2.0.5"\) at .+/bundler\.d/local_overrides.rb:1\n\z}
+        end
+
+        it "bundle exec" do
+          bundle("exec #{exec_command}", verbose: false)
+
+          expect(out).to eq %Q{[["omg", "0.0.6"], ["rack", "2.0.5"], ["rack-obama", "0.1.1"]]\n}
+          expect(err).to match %r{\A\*\* override_gem\("rack", "=2.0.5"\) at .+/bundler\.d/local_overrides.rb:1\n\z}
+        end
+      end
+    end
+  end
+
   context "on initial update" do
     before do
       write_gemfile(base_gemfile)
@@ -192,6 +253,7 @@ RSpec.describe Bundler::Inject do
     end
 
     include_examples "overrides"
+    include_examples "bundle check/exec"
   end
 
   context "after initial update" do
@@ -215,5 +277,6 @@ RSpec.describe Bundler::Inject do
     end
 
     include_examples "overrides"
+    include_examples "bundle check/exec"
   end
 end
