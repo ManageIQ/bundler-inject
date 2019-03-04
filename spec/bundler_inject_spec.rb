@@ -124,7 +124,7 @@ RSpec.describe Bundler::Inject do
             F
             bundle(:update)
 
-            expect(lockfile_specs).to eq [["rack", extract_rack_version(path.expand_path)]]
+            expect(lockfile_specs).to eq [["rack", extract_rack_version(path)]]
             expect(err).to match %r{^\*\* override_gem\("rack", :path=>#{path.expand_path.to_s.inspect}\) at .+/bundler\.d/local_overrides.rb:1$}
           end
         end

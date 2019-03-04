@@ -6,7 +6,7 @@ module Spec
     def self.bundler_version
       return @bundler_version if defined?(@bundler_version)
       versions = Bundler.with_clean_env do
-        `gem list bundler | grep "bundler "`.chomp.scan(/\d+\.\d+\.\d+/)
+        `gem list bundler`.lines.grep(/^bundler /).first.scan(/\d+\.\d+\.\d+/)
       end
       to_find = ENV["TEST_BUNDLER_VERSION"] || ENV["BUNDLER_VERSION"]
       @bundler_version = versions.detect { |v| v.include?(to_find) }
@@ -18,6 +18,15 @@ module Spec
       bundler_version.rpartition(".").first
     end
 
+    # Ruby gem binstubs allow you to pass a secret version in order to load a
+    # bin file for a particular gem version. This is useful when you have
+    # multiple versions of a gem installed and only want to invoke a specific
+    # one.
+    #
+    # So, if I have bundler 1.17.3 and 2.0.1 installed, I can run 1.17.3 with:
+    #
+    #     bundle _1.17.3_ update
+    #
     def self.bundler_cli_version
       "_#{bundler_version}_"
     end
@@ -136,7 +145,7 @@ module Spec
         _, path, _, _ = raw_bundle("show rack")
         path = Pathname.new(path.chomp)
       end
-      path.join("lib/rack.rb").read[/RELEASE += +([\"\'])([\d][\w\.]+)\1/, 2]
+      path.expand_path.join("lib/rack.rb").read[/RELEASE += +([\"\'])([\d][\w\.]+)\1/, 2]
     end
   end
 end

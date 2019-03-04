@@ -29,8 +29,7 @@ RSpec.configure do |config|
     #   be ignored, which can lead to confusion during development.
     #
     # This test ensures that we commit the code before testing it.
-    `test -z "$(git status lib --porcelain)"`
-    if $?.exitstatus != 0
+    if `git status lib --porcelain`.length != 0
       raise "You cannot run specs with uncommitted changes to the lib directory."
     end
 
