@@ -5,13 +5,13 @@ rvm:
 - 2.4.5
 - 2.5.3
 env:
-- BUNDLER_VERSION=1.15
-- BUNDLER_VERSION=1.16
-- BUNDLER_VERSION=1.17
-- BUNDLER_VERSION=2.0
+- TEST_BUNDLER_VERSION=1.15
+- TEST_BUNDLER_VERSION=1.16
+- TEST_BUNDLER_VERSION=1.17
+- TEST_BUNDLER_VERSION=2.0
 before_install:
 - 'echo ''gem: --no-ri --no-rdoc --no-document'' > ~/.gemrc'
-- gem install bundler -v "~> $BUNDLER_VERSION"
+- gem install bundler -v "~> $TEST_BUNDLER_VERSION.0"
 before_script:
 - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
   > ./cc-test-reporter

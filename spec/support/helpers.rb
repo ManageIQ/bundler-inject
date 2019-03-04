@@ -5,13 +5,17 @@ module Spec
   module Helpers
     def self.bundler_version
       return @bundler_version if defined?(@bundler_version)
-      versions = `gem list bundler | grep bundler`.chomp.match(/\(([^)]+)\)/)[1].split(",").map(&:strip)
-      @bundler_version = versions.detect { |v| v.include?(ENV["BUNDLER_VERSION"]) }
+      versions = Bundler.with_clean_env do
+        `gem list bundler | grep "bundler "`.chomp.scan(/\d+\.\d+\.\d+/)
+      end
+      to_find = ENV["TEST_BUNDLER_VERSION"] || ENV["BUNDLER_VERSION"]
+      @bundler_version = versions.detect { |v| v.include?(to_find) }
+      raise "Unable to find bundler version: #{to_find.inspect}" if @bundler_version.nil?
+      @bundler_version
     end
 
     def self.bundler_cli_version
-      v = bundler_version
-      "_#{v}_" if v
+      "_#{bundler_version}_"
     end
 
     def self.global_bundler_d_dir
