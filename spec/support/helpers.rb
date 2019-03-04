@@ -67,7 +67,7 @@ module Spec
     def with_path_based_gem(source_repo)
       Dir.mktmpdir do |path|
         path = Pathname.new(path)
-        Dir.chdir(path) { `git clone #{source_repo} the_gem 2>/dev/null` }
+        Dir.chdir(path) { `git clone --depth 1 #{source_repo} the_gem 2>/dev/null` }
         path = path.join("the_gem")
 
         yield path
