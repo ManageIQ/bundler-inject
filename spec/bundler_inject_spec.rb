@@ -47,6 +47,20 @@ RSpec.describe Bundler::Inject do
       expect(lockfile_specs).to match_array [["rack", "2.0.6"], ["rack-obama", "0.1.1"], ["omg", "0.0.6"]]
     end
 
+    it "only outputs \"Injecting\" in verbose mode" do
+      write_bundler_d_file <<~F
+        gem "rack-obama"
+      F
+      write_global_bundler_d_file <<~F
+        gem "omg"
+      F
+      bundle(:update, verbose: false)
+
+      expect(out).to_not match %r{^Injecting .+/bundler\.d/local_overrides\.rb\.\.\.$}
+      expect(out).to_not match %r{^Injecting .+/.bundler\.d/global_overrides\.rb\.\.\.$}
+      expect(lockfile_specs).to match_array [["rack", "2.0.6"], ["rack-obama", "0.1.1"], ["omg", "0.0.6"]]
+    end
+
     describe "#override_gem" do
       it "with a different version" do
         write_bundler_d_file <<~F
