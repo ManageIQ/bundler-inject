@@ -38,12 +38,14 @@ RSpec.describe Bundler::Inject do
           bundle(:update, verbose: true)
 
           expect(out).to match %r{^Injecting .+/bundler\.d/local_overrides\.rb\.\.\.$}
+          expect(out).to_not match %r{^Injecting .+/.bundler\.d/global_overrides\.rb\.\.\.$}
         end
 
         it "with global file only" do
           write_global_bundler_d_file ""
           bundle(:update, verbose: true)
 
+          expect(out).to_not match %r{^Injecting .+/bundler\.d/local_overrides\.rb\.\.\.$}
           expect(out).to match %r{^Injecting .+/.bundler\.d/global_overrides\.rb\.\.\.$}
         end
       end
