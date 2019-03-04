@@ -48,6 +48,13 @@ RSpec.describe Bundler::Inject do
           expect(out).to_not match %r{^Injecting .+/bundler\.d/local_overrides\.rb\.\.\.$}
           expect(out).to match %r{^Injecting .+/.bundler\.d/global_overrides\.rb\.\.\.$}
         end
+
+        it "with no files to inject" do
+          bundle(:update, verbose: true)
+
+          expect(out).to_not match /^Injecting /
+          expect(lockfile_specs).to eq [["rack", "2.0.6"]]
+        end
       end
 
       describe "#gem" do
@@ -267,13 +274,6 @@ RSpec.describe Bundler::Inject do
       expect(out).to include "Installed plugin bundler-inject"
     end
 
-    it "with no files to inject" do
-      bundle(:update)
-
-      expect(out).to_not match /^Injecting /
-      expect(lockfile_specs).to eq [["rack", "2.0.6"]]
-    end
-
     include_examples "bundle update"
     include_examples "bundle check/exec"
   end
@@ -289,13 +289,6 @@ RSpec.describe Bundler::Inject do
 
       expect(out).to include "Using bundler-inject #{Bundler::Inject::VERSION}"
       expect(out).to_not include "Installed plugin bundler-inject"
-    end
-
-    it "with no files to inject" do
-      bundle(:update)
-
-      expect(out).to_not match /^Injecting /
-      expect(lockfile_specs).to eq [["rack", "2.0.6"]]
     end
 
     include_examples "bundle update"
