@@ -93,7 +93,8 @@ RSpec.describe Bundler::Inject do
         F
         bundle(:update, expect_error: true)
 
-        expect(out).to include "Trying to override unknown gem \"omg\""
+        stream = bundler_short_version == "2.0" ? err : out
+        expect(stream).to include "Trying to override unknown gem \"omg\""
       end
     end
 

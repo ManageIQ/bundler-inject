@@ -14,6 +14,10 @@ module Spec
       @bundler_version
     end
 
+    def self.bundler_short_version
+      bundler_version.rpartition(".").first
+    end
+
     def self.bundler_cli_version
       "_#{bundler_version}_"
     end
@@ -37,6 +41,14 @@ module Spec
     end
 
     attr_reader :out, :err, :process_status
+
+    def bundler_version
+      Helpers.bundler_version
+    end
+
+    def bundler_short_version
+      Helpers.bundler_short_version
+    end
 
     def app_dir
       @app_dir ||= Pathname.new(Dir.mktmpdir)

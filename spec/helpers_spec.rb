@@ -5,7 +5,7 @@ RSpec.describe Spec::Helpers do
       gem "rack", "=2.0.6"
     G
 
-    expect(lockfile.bundler_version.to_s).to eq(described_class.bundler_version)
+    expect(lockfile.bundler_version.to_s).to eq(bundler_version)
     expect(lockfile_specs).to eq [["rack", "2.0.6"]]
   end
 end
