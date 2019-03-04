@@ -31,7 +31,13 @@ module Bundler
         calling_loc = caller_locations(1, 1).first
         if calling_loc.path.include?("bundler/dsl.rb") && calling_loc.base_label == "evaluate"
           load_global_bundler_d
-          @gemfiles.reverse_each do |gemfile|
+
+          # @gemfiles doesn't exist on Bundler <= 1.15, and we can't get at @gemfile
+          #   by this point, but there's a high probability it's just "Gemfile",
+          #   or slightly more accurately, the lockfile name without the ".lock" bit.
+          targets = defined?(@gemfiles) ? @gemfiles : [Pathname.new(lockfile.to_s.chomp(".lock"))]
+
+          targets.reverse_each do |gemfile|
             load_local_bundler_d(File.dirname(gemfile))
           end
         end
