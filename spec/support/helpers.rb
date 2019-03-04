@@ -74,16 +74,6 @@ module Spec
       end
     end
 
-    def debug_output
-      puts "== STDOUT ===============".light_magenta
-      puts out unless out.empty?
-      puts "== STDERR ===============".light_magenta
-      puts err unless err.empty?
-      puts "== STATUS ===============".light_magenta
-      puts process_status
-      puts "=========================".light_magenta
-    end
-
     def write_gemfile(contents)
       File.write(app_dir.join("Gemfile"), contents)
     end
@@ -111,8 +101,20 @@ module Spec
       if expect_error
         expect(@process_status.exitstatus).to_not eq(0), "#{command.inspect} succeeded but was not expected to."
       else
-        expect(@process_status.exitstatus).to eq(0), "#{command.inspect} failed with:\n#{@err}"
+        expect(@process_status.exitstatus).to eq(0), "#{command.inspect} failed with:\n#{bundler_output}"
       end
+    end
+
+    def bundler_output
+      s = StringIO.new
+      s.puts "== STDOUT ===============".light_magenta
+      s.puts out unless out.empty?
+      s.puts "== STDERR ===============".light_magenta
+      s.puts err unless err.empty?
+      s.puts "== STATUS ===============".light_magenta
+      s.puts process_status
+      s.puts "=========================".light_magenta
+      s.string
     end
 
     def update_gemfile(contents)
