@@ -17,7 +17,7 @@ RSpec.describe Bundler::Inject do
       write_bundler_d_file <<~F
         gem "rack-obama"
       F
-      bundle(:update)
+      bundle(:update, verbose: true)
 
       expect(out).to match %r{^Injecting .+/bundler\.d/local_overrides\.rb\.\.\.$}
       expect(lockfile_specs).to match_array [["rack", "2.0.6"], ["rack-obama", "0.1.1"]]
@@ -27,7 +27,7 @@ RSpec.describe Bundler::Inject do
       write_global_bundler_d_file <<~F
         gem "rack-obama"
       F
-      bundle(:update)
+      bundle(:update, verbose: true)
 
       expect(out).to match %r{^Injecting .+/.bundler\.d/global_overrides\.rb\.\.\.$}
       expect(lockfile_specs).to match_array [["rack", "2.0.6"], ["rack-obama", "0.1.1"]]
@@ -40,7 +40,7 @@ RSpec.describe Bundler::Inject do
       write_global_bundler_d_file <<~F
         gem "omg"
       F
-      bundle(:update)
+      bundle(:update, verbose: true)
 
       expect(out).to match %r{^Injecting .+/bundler\.d/local_overrides\.rb\.\.\.$}
       expect(out).to match %r{^Injecting .+/.bundler\.d/global_overrides\.rb\.\.\.$}
@@ -54,7 +54,7 @@ RSpec.describe Bundler::Inject do
       write_global_bundler_d_file <<~F
         gem "omg"
       F
-      bundle(:update, verbose: false)
+      bundle(:update)
 
       expect(out).to_not match %r{^Injecting .+/bundler\.d/local_overrides\.rb\.\.\.$}
       expect(out).to_not match %r{^Injecting .+/.bundler\.d/global_overrides\.rb\.\.\.$}
@@ -190,14 +190,14 @@ RSpec.describe Bundler::Inject do
         end
 
         it "bundle check" do
-          bundle(:check, verbose: false)
+          bundle(:check)
 
           expect(out).to eq "The Gemfile's dependencies are satisfied\n"
           expect(err).to be_empty
         end
 
         it "bundle exec" do
-          bundle("exec #{exec_command}", verbose: false)
+          bundle("exec #{exec_command}")
 
           expect(out).to eq %Q{[["omg", "0.0.6"], ["rack", "2.0.6"], ["rack-obama", "0.1.1"]]\n}
           expect(err).to be_empty
@@ -217,14 +217,14 @@ RSpec.describe Bundler::Inject do
         end
 
         it "bundle check" do
-          bundle(:check, verbose: false)
+          bundle(:check)
 
           expect(out).to eq "The Gemfile's dependencies are satisfied\n"
           expect(err).to match %r{\A\*\* override_gem\("rack", "=2.0.5"\) at .+/bundler\.d/local_overrides.rb:1\n\z}
         end
 
         it "bundle exec" do
-          bundle("exec #{exec_command}", verbose: false)
+          bundle("exec #{exec_command}")
 
           expect(out).to eq %Q{[["omg", "0.0.6"], ["rack", "2.0.5"], ["rack-obama", "0.1.1"]]\n}
           expect(err).to match %r{\A\*\* override_gem\("rack", "=2.0.5"\) at .+/bundler\.d/local_overrides.rb:1\n\z}

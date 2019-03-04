@@ -88,7 +88,7 @@ module Spec
       lf.specs.map { |s| [s.name, s.version.to_s] }
     end
 
-    def raw_bundle(command, verbose: true)
+    def raw_bundle(command, verbose: false)
       command = "bundle #{Helpers.bundler_cli_version} #{command} #{"--verbose" if verbose}".strip
       out, err, process_status = Bundler.with_clean_env do
         Open3.capture3(command, :chdir => app_dir)
@@ -96,7 +96,7 @@ module Spec
       return command, out, err, process_status
     end
 
-    def bundle(command, expect_error: false, verbose: true)
+    def bundle(command, expect_error: false, verbose: false)
       command, @out, @err, @process_status = raw_bundle(command, verbose: verbose)
       if expect_error
         expect(@process_status.exitstatus).to_not eq(0), "#{command.inspect} succeeded but was not expected to."
@@ -133,7 +133,7 @@ module Spec
 
     def extract_rack_version(path = nil)
       unless path
-        _, path, _, _ = raw_bundle("show rack", verbose: false)
+        _, path, _, _ = raw_bundle("show rack")
         path = Pathname.new(path.chomp)
       end
       path.join("lib/rack.rb").read[/RELEASE += +([\"\'])([\d][\w\.]+)\1/, 2]
