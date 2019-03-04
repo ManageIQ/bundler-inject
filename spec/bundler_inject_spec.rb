@@ -56,11 +56,7 @@ RSpec.describe Bundler::Inject do
       end
 
       it "with a path" do
-        Dir.mktmpdir do |path|
-          path = Pathname.new(path)
-          Dir.chdir(path) { `git clone https://github.com/rack/rack 2>/dev/null` }
-          path = path.join("rack")
-
+        with_path_based_gem("https://github.com/rack/rack") do |path|
           write_bundler_d_file <<~F
             override_gem "rack", :path => #{path.to_s.inspect}
           F
@@ -72,10 +68,8 @@ RSpec.describe Bundler::Inject do
       end
 
       it "with a path that includes ~" do
-        Dir.mktmpdir do |path|
-          path = Pathname.new(path)
-          Dir.chdir(path) { `git clone https://github.com/rack/rack 2>/dev/null` }
-          path = Pathname.new("~/#{path.join("rack").relative_path_from(Pathname.new("~").expand_path)}")
+        with_path_based_gem("https://github.com/rack/rack") do |path|
+          path = Pathname.new("~/#{path.relative_path_from(Pathname.new("~").expand_path)}")
 
           write_bundler_d_file <<~F
             override_gem "rack", :path => #{path.to_s.inspect}

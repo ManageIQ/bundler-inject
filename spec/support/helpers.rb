@@ -64,6 +64,16 @@ module Spec
       FileUtils.rm_rf(Helpers.global_bundler_d_dir)
     end
 
+    def with_path_based_gem(source_repo)
+      Dir.mktmpdir do |path|
+        path = Pathname.new(path)
+        Dir.chdir(path) { `git clone #{source_repo} the_gem 2>/dev/null` }
+        path = path.join("the_gem")
+
+        yield path
+      end
+    end
+
     def debug_output
       puts "== STDOUT ===============".light_magenta
       puts out unless out.empty?
