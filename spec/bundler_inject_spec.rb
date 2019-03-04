@@ -1,4 +1,17 @@
 RSpec.describe Bundler::Inject do
+  let(:base_gemfile) do
+    bundler_inject_root = Pathname.new(__dir__).join("..").expand_path
+
+    <<~G
+      source "https://rubygems.org"
+
+      plugin "bundler-inject", :git => #{bundler_inject_root.to_s.inspect}, :ref => "HEAD"
+      require File.join(Bundler::Plugin.index.load_paths("bundler-inject")[0], "bundler-inject") rescue nil
+
+      gem "rack", "=2.0.6"
+    G
+  end
+
   shared_examples_for "overrides" do
     it "with local overrides" do
       write_bundler_d_file <<~F
@@ -147,13 +160,7 @@ RSpec.describe Bundler::Inject do
 
   context "on initial update" do
     before do
-      write_gemfile <<~G
-        source "https://rubygems.org"
-
-        #{plugin_gemfile_content}
-
-        gem "rack", "=2.0.6"
-      G
+      write_gemfile(base_gemfile)
     end
 
     it "installs the plugin" do
@@ -173,15 +180,9 @@ RSpec.describe Bundler::Inject do
     include_examples "overrides"
   end
 
-  context "on second update" do
+  context "after initial update" do
     before do
-      write_gemfile <<~G
-        source "https://rubygems.org"
-
-        #{plugin_gemfile_content}
-
-        gem "rack", "=2.0.6"
-      G
+      write_gemfile(base_gemfile)
       bundle(:update)
     end
 

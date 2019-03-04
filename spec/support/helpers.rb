@@ -117,20 +117,6 @@ module Spec
       s.string
     end
 
-    def update_gemfile(contents)
-      write_gemfile(contents)
-      bundle(:update)
-    end
-
-    def plugin_gemfile_content
-      @bundler_inject_root ||= Pathname.new(__dir__).join("../..").expand_path
-
-      <<~G
-        plugin "bundler-inject", :git => #{@bundler_inject_root.to_s.inspect}, :ref => "HEAD"
-        require File.join(Bundler::Plugin.index.load_paths("bundler-inject")[0], "bundler-inject") rescue nil
-      G
-    end
-
     def write_bundler_d_file(content, filename = "local_overrides.rb")
       Dir.chdir(app_dir) do
         FileUtils.mkdir_p("bundler.d")
