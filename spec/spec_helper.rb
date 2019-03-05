@@ -1,5 +1,6 @@
 if ENV['CI']
   require 'simplecov'
+  SimpleCov.command_name "bundler-inject"
   SimpleCov.start
 end
 
@@ -12,6 +13,7 @@ Dir[File.join(__dir__, "support/**/*.rb")].each { |f| require f }
 
 RSpec.configure do |config|
   config.include Spec::Helpers
+  config.include Spec::CoverageHelper
 
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
@@ -41,6 +43,7 @@ RSpec.configure do |config|
 
   config.after(:suite) do
     Spec::Helpers.restore_global_bundler_d
+    Spec::CoverageHelper.fix_coverage_resultset_paths
   end
 
   config.after do
