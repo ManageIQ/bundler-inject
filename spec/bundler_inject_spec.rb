@@ -2,13 +2,11 @@ RSpec.describe Bundler::Inject do
   let(:base_gemfile) do
     bundler_inject_root = Pathname.new(__dir__).join("..").expand_path
 
-    <<~G
+    <<~G.chomp
       source "https://rubygems.org"
 
       plugin "bundler-inject", :git => #{bundler_inject_root.to_s.inspect}, :ref => "HEAD"
       require File.join(Bundler::Plugin.index.load_paths("bundler-inject")[0], "bundler-inject") rescue nil
-
-      gem "rack", "=2.0.6"
     G
   end
 
@@ -294,7 +292,11 @@ RSpec.describe Bundler::Inject do
 
   context "on initial update" do
     before do
-      write_gemfile(base_gemfile)
+      write_gemfile <<~G
+        #{base_gemfile}
+
+        gem "rack", "=2.0.6"
+      G
     end
 
     it "installs the plugin" do
@@ -310,7 +312,11 @@ RSpec.describe Bundler::Inject do
 
   context "after initial update" do
     before do
-      write_gemfile(base_gemfile)
+      write_gemfile <<~G
+        #{base_gemfile}
+
+        gem "rack", "=2.0.6"
+      G
       bundle(:update)
     end
 
@@ -323,5 +329,29 @@ RSpec.describe Bundler::Inject do
 
     include_examples "bundle update"
     include_examples "bundle check/exec"
+  end
+
+  context "with a git-based gem in the base Gemfile" do
+    before do
+      write_gemfile <<~G
+        #{base_gemfile}
+
+        gem "rack", :git => "https://github.com/rack/rack"
+      G
+    end
+
+    describe "#override_gem" do
+      it "will remove the original git source" do
+        write_bundler_d_file <<~F
+          override_gem "rack", "=2.0.6"
+        F
+        bundle(:update)
+
+        expect(lockfile_specs).to eq [["rack", "2.0.6"]]
+        expect(err).to match %r{^\*\* override_gem\("rack", "=2.0.6"\) at .+/bundler\.d/local_overrides\.rb:1$}
+
+        expect(lockfile.sources.map(&:class)).to_not include(Bundler::Source::Git)
+      end
+    end
   end
 end
