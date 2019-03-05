@@ -259,6 +259,33 @@ RSpec.describe Bundler::Inject do
           expect(err).to match %r{\A\*\* override_gem\("rack", "=2.0.5"\) at .+/bundler\.d/local_overrides.rb:1\n\z}
         end
       end
+
+      describe "#ensure_gem" do
+        before do
+          write_bundler_d_file <<~F
+            gem "omg"
+            gem "rack-obama"
+          F
+          write_global_bundler_d_file <<~F
+            ensure_gem "rack", "=2.0.5"
+          F
+          bundle(:update)
+        end
+
+        it "bundle check" do
+          bundle(:check)
+
+          expect(out).to eq "The Gemfile's dependencies are satisfied\n"
+          expect(err).to match %r{\A\*\* override_gem\("rack", "=2.0.5"\) at .+/\.bundler\.d/global_overrides\.rb:1\n\z}
+        end
+
+        it "bundle exec" do
+          bundle("exec #{exec_command}")
+
+          expect(out).to eq %Q{[["omg", "0.0.6"], ["rack", "2.0.5"], ["rack-obama", "0.1.1"]]\n}
+          expect(err).to match %r{\A\*\* override_gem\("rack", "=2.0.5"\) at .+/\.bundler\.d/global_overrides\.rb:1\n\z}
+        end
+      end
     end
   end
 
