@@ -87,6 +87,7 @@ module Spec
     end
 
     def write_gemfile(contents)
+      contents = "#{coverage_prelude}\n\n#{contents}"
       File.write(app_dir.join("Gemfile"), contents)
     end
 
