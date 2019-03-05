@@ -15,13 +15,16 @@ RSpec.describe Bundler::Inject do
   shared_examples_for "bundle update" do
     context "bundle update" do
       describe "printing \"Injecting\"..." do
+        let(:injecting_local_override)  { %r{^Injecting .+/bundler\.d/local_overrides\.rb\.\.\.$} }
+        let(:injecting_global_override) { %r{^Injecting .+/\.bundler\.d/global_overrides\.rb\.\.\.$} }
+
         it "without verbose" do
           write_bundler_d_file ""
           write_global_bundler_d_file ""
           bundle(:update)
 
-          expect(out).to_not match %r{^Injecting .+/bundler\.d/local_overrides\.rb\.\.\.$}
-          expect(out).to_not match %r{^Injecting .+/.bundler\.d/global_overrides\.rb\.\.\.$}
+          expect(out).to_not match injecting_local_override
+          expect(out).to_not match injecting_global_override
         end
 
         it "with verbose" do
@@ -29,24 +32,24 @@ RSpec.describe Bundler::Inject do
           write_global_bundler_d_file ""
           bundle(:update, verbose: true)
 
-          expect(out).to match %r{^Injecting .+/bundler\.d/local_overrides\.rb\.\.\.$}
-          expect(out).to match %r{^Injecting .+/.bundler\.d/global_overrides\.rb\.\.\.$}
+          expect(out).to match injecting_local_override
+          expect(out).to match injecting_global_override
         end
 
         it "with local file only" do
           write_bundler_d_file ""
           bundle(:update, verbose: true)
 
-          expect(out).to match %r{^Injecting .+/bundler\.d/local_overrides\.rb\.\.\.$}
-          expect(out).to_not match %r{^Injecting .+/.bundler\.d/global_overrides\.rb\.\.\.$}
+          expect(out).to match injecting_local_override
+          expect(out).to_not match injecting_global_override
         end
 
         it "with global file only" do
           write_global_bundler_d_file ""
           bundle(:update, verbose: true)
 
-          expect(out).to_not match %r{^Injecting .+/bundler\.d/local_overrides\.rb\.\.\.$}
-          expect(out).to match %r{^Injecting .+/.bundler\.d/global_overrides\.rb\.\.\.$}
+          expect(out).to_not match injecting_local_override
+          expect(out).to match injecting_global_override
         end
 
         it "with no files to inject" do
@@ -97,7 +100,7 @@ RSpec.describe Bundler::Inject do
           bundle(:update)
 
           expect(lockfile_specs).to eq [["rack", "2.0.5"]]
-          expect(err).to match %r{^\*\* override_gem\("rack", "=2.0.5"\) at .+/bundler\.d/local_overrides.rb:1$}
+          expect(err).to match %r{^\*\* override_gem\("rack", "=2.0.5"\) at .+/bundler\.d/local_overrides\.rb:1$}
         end
 
         it "with a git repo" do
@@ -107,7 +110,7 @@ RSpec.describe Bundler::Inject do
           bundle(:update)
 
           expect(lockfile_specs).to eq [["rack", extract_rack_version]]
-          expect(err).to match %r{^\*\* override_gem\("rack", :git=>"https://github.com/rack/rack"\) at .+/bundler\.d/local_overrides.rb:1$}
+          expect(err).to match %r{^\*\* override_gem\("rack", :git=>"https://github.com/rack/rack"\) at .+/bundler\.d/local_overrides\.rb:1$}
         end
 
         it "with a path" do
@@ -118,7 +121,7 @@ RSpec.describe Bundler::Inject do
             bundle(:update)
 
             expect(lockfile_specs).to eq [["rack", extract_rack_version(path)]]
-            expect(err).to match %r{^\*\* override_gem\("rack", :path=>#{path.to_s.inspect}\) at .+/bundler\.d/local_overrides.rb:1$}
+            expect(err).to match %r{^\*\* override_gem\("rack", :path=>#{path.to_s.inspect}\) at .+/bundler\.d/local_overrides\.rb:1$}
           end
         end
 
@@ -132,7 +135,7 @@ RSpec.describe Bundler::Inject do
             bundle(:update)
 
             expect(lockfile_specs).to eq [["rack", extract_rack_version(path)]]
-            expect(err).to match %r{^\*\* override_gem\("rack", :path=>#{path.expand_path.to_s.inspect}\) at .+/bundler\.d/local_overrides.rb:1$}
+            expect(err).to match %r{^\*\* override_gem\("rack", :path=>#{path.expand_path.to_s.inspect}\) at .+/bundler\.d/local_overrides\.rb:1$}
           end
         end
 
@@ -185,7 +188,7 @@ RSpec.describe Bundler::Inject do
           bundle(:update)
 
           expect(lockfile_specs).to eq [["rack", "2.0.5"]]
-          expect(err).to match %r{^\*\* override_gem\("rack", "=2.0.5"\) at .+/\.bundler\.d/global_overrides.rb:1$}
+          expect(err).to match %r{^\*\* override_gem\("rack", "=2.0.5"\) at .+/\.bundler\.d/global_overrides\.rb:1$}
         end
 
         it "when overriding with other options" do
@@ -195,7 +198,7 @@ RSpec.describe Bundler::Inject do
           bundle(:update)
 
           expect(lockfile_specs).to eq [["rack", extract_rack_version]]
-          expect(err).to match %r{^\*\* override_gem\("rack", :git=>"https://github.com/rack/rack"\) at .+/\.bundler\.d/global_overrides.rb:1$}
+          expect(err).to match %r{^\*\* override_gem\("rack", :git=>"https://github.com/rack/rack"\) at .+/\.bundler\.d/global_overrides\.rb:1$}
         end
       end
     end
@@ -249,14 +252,14 @@ RSpec.describe Bundler::Inject do
           bundle(:check)
 
           expect(out).to eq "The Gemfile's dependencies are satisfied\n"
-          expect(err).to match %r{\A\*\* override_gem\("rack", "=2.0.5"\) at .+/bundler\.d/local_overrides.rb:1\n\z}
+          expect(err).to match %r{\A\*\* override_gem\("rack", "=2.0.5"\) at .+/bundler\.d/local_overrides\.rb:1\n\z}
         end
 
         it "bundle exec" do
           bundle("exec #{exec_command}")
 
           expect(out).to eq %Q{[["omg", "0.0.6"], ["rack", "2.0.5"], ["rack-obama", "0.1.1"]]\n}
-          expect(err).to match %r{\A\*\* override_gem\("rack", "=2.0.5"\) at .+/bundler\.d/local_overrides.rb:1\n\z}
+          expect(err).to match %r{\A\*\* override_gem\("rack", "=2.0.5"\) at .+/bundler\.d/local_overrides\.rb:1\n\z}
         end
       end
 
