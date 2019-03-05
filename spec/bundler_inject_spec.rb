@@ -146,6 +146,17 @@ RSpec.describe Bundler::Inject do
           stream = bundler_short_version == "2.0" ? err : out
           expect(stream).to include "Trying to override unknown gem \"omg\""
         end
+
+        it "with ENV['RAILS_ENV'] = 'production'" do
+          write_bundler_d_file <<~F
+            override_gem "rack", "=2.0.5"
+          F
+          bundle(:update, env: { "RAILS_ENV" => "production" })
+
+          expect(lockfile_specs).to eq [["rack", "2.0.5"]]
+          expect(err).to_not match %r{^\*\* override_gem}
+        end
+
       end
 
       describe "#ensure_gem" do
