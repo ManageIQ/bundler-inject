@@ -1,6 +1,6 @@
 # bundler-inject
 
-[![Build Status](https://travis-ci.org/ManageIQ/bundler-inject.svg?branch=master)](https://travis-ci.org/ManageIQ/bundler-inject))
+[![Build Status](https://travis-ci.org/ManageIQ/bundler-inject.svg?branch=master)](https://travis-ci.org/ManageIQ/bundler-inject)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e4650d6dd7cbcd981057/maintainability)](https://codeclimate.com/github/ManageIQ/bundler-inject/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/e4650d6dd7cbcd981057/test_coverage)](https://codeclimate.com/github/ManageIQ/bundler-inject/test_coverage)
 [![Security](https://hakiri.io/github/ManageIQ/bundler-inject/master.svg)](https://hakiri.io/github/ManageIQ/bundler-inject/master)
@@ -134,7 +134,7 @@ Development of bundler plugins can be a little strange, with a few gotchas.
    and thus doesn't know how. To get around this, use
    `:git => File.expand_path("/path/to/bundler-inject")`.
 3. If you are using :git (which also applies to :path with the workaround
-   above), bundler will only considered committed code. Therefore, you *must*
+   above), bundler will only consider committed code. Therefore, you *must*
    commit your code in a temporary commit if you want it to be picked up.
 4. bundler plugins are copied to .bundle/plugin only on first install, and then
    updated only if a change is detected. Unless you have a `:ref` or a changing
