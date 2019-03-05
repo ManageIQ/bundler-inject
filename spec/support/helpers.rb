@@ -76,7 +76,10 @@ module Spec
     def with_path_based_gem(source_repo)
       Dir.mktmpdir do |path|
         path = Pathname.new(path)
-        Dir.chdir(path) { `git clone --depth 1 #{source_repo} the_gem 2>/dev/null` }
+        Dir.chdir(path) do
+          out, status = Open3.capture2e("git clone --depth 1 #{source_repo} the_gem")
+          raise "An error occured while cloning #{source_repo.inspect}...\n#{out}" unless status.exitstatus == 0
+        end
         path = path.join("the_gem")
 
         yield path
