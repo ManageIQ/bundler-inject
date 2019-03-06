@@ -77,6 +77,24 @@ otherwise if the options or version specified are significantly different, it
 will use `override_gem`, otherwise it will just do nothing, deferring to the
 original declaration.
 
+## Configuration
+
+To disable warnings that are output to the console when `override_gem` or
+`ensure_gem` is in use, you can update a bundler setting:
+
+```console
+$ bundle config bundler_inject.disable_warn_override_gem true
+```
+
+or use an environment variable:
+
+```console
+$ export BUNDLE_BUNDLER_INJECT__DISABLE_WARN_OVERRIDE_GEM=true
+```
+
+There is a fallback for those that will check the `RAILS_ENV` environment
+variable, and will disable the warning when in `"production"`.
+
 ## What is this sorcery?
 
 While this is technically a bundler plugin, bundler-inject does not use the
