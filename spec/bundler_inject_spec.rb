@@ -158,6 +158,26 @@ RSpec.describe Bundler::Inject do
           expect(err).to_not match %r{^\*\* override_gem}
         end
 
+        it "with ENV['RAILS_ENV'] = 'production'" do
+          write_bundler_d_file <<~F
+            override_gem "rack", "=2.0.5"
+          F
+          bundle(:update, env: { "RAILS_ENV" => "production" })
+
+          expect(lockfile_specs).to eq [["rack", "2.0.5"]]
+          expect(err).to_not match %r{^\*\* override_gem}
+        end
+
+        it "with ENV['RAILS_ENV'] = 'production' and the Bundler::Setting false" do
+          write_bundler_d_file <<~F
+            override_gem "rack", "=2.0.5"
+          F
+          env_var = "BUNDLE_BUNDLER_INJECT__DISABLE_WARN_OVERRIDE_GEM"
+          bundle(:update, env: { "RAILS_ENV" => "production", env_var => 'false' })
+
+          expect(lockfile_specs).to eq [["rack", "2.0.5"]]
+          expect(err).to match %r{^\*\* override_gem\("rack", "=2.0.5"\) at .+/bundler\.d/local_overrides\.rb:1$}
+        end
       end
 
       describe "#ensure_gem" do
