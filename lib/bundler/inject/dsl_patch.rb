@@ -69,7 +69,7 @@ module Bundler
       end
 
       def warn_override_gem(calling_file, name, args)
-        return if ENV["RAILS_ENV"] == "production"
+        return if Bundler::Inject.skip_warnings?
 
         version, opts = extract_version_opts(args)
         message = "** override_gem(#{name.inspect}"

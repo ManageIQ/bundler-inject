@@ -101,16 +101,16 @@ module Spec
       lf.specs.map { |s| [s.name, s.version.to_s] }
     end
 
-    def raw_bundle(command, verbose: false)
+    def raw_bundle(command, verbose: false, env: {})
       command = "bundle #{Helpers.bundler_cli_version} #{command} #{"--verbose" if verbose}".strip
       out, err, process_status = Bundler.with_clean_env do
-        Open3.capture3(command, :chdir => app_dir)
+        Open3.capture3(env, command, :chdir => app_dir)
       end
       return command, out, err, process_status
     end
 
-    def bundle(command, expect_error: false, verbose: false)
-      command, @out, @err, @process_status = raw_bundle(command, verbose: verbose)
+    def bundle(command, expect_error: false, verbose: false, env: {})
+      command, @out, @err, @process_status = raw_bundle(command, verbose: verbose, env: env)
       if expect_error
         expect(@process_status.exitstatus).to_not eq(0), "#{command.inspect} succeeded but was not expected to."
       else
