@@ -143,7 +143,7 @@ RSpec.describe Bundler::Inject do
           F
           bundle(:update, expect_error: true)
 
-          stream = bundler_short_version == "2.0" ? err : out
+          stream = bundler_short_version.split(".").first == "1" ? out : err
           expect(stream).to include "Trying to override unknown gem \"omg\""
         end
 
@@ -237,7 +237,7 @@ RSpec.describe Bundler::Inject do
   shared_examples_for "bundle check/exec" do
     context "bundle check/exec" do
       let(:exec_command) do
-        %q{ruby -e "puts Bundler.environment.gems.select { |g| %w[rack rack-obama omg].include?(g.name) }.map { |g| [g.name, g.version.version] }.sort.inspect"}
+        %q{ruby -e "puts Bundler.load.gems.select { |g| %w[rack rack-obama omg].include?(g.name) }.map { |g| [g.name, g.version.version] }.sort.inspect"}
       end
 
       describe "#gem" do
