@@ -149,7 +149,7 @@ module Spec
         _, path, _, _ = raw_bundle("show rack")
         path = Pathname.new(path.chomp)
       end
-      path.expand_path.join("lib/rack.rb").read[/RELEASE += +([\"\'])([\d][\w\.]+)\1/, 2]
+      path.expand_path.join("lib/rack/version.rb").read[/RELEASE += +([\"\'])([\d][\w\.]+)\1/, 2]
     end
   end
 end
