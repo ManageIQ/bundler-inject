@@ -82,7 +82,9 @@ module Bundler
       end
 
       def load_global_bundler_d
-        load_bundler_d(File.join(Dir.home, ".bundler.d"))
+        if ENV["HOME"]
+          load_bundler_d(File.join(Dir.home, ".bundler.d"))
+        end
       end
 
       def load_local_bundler_d(dir)
