@@ -40,13 +40,17 @@ module Spec
     end
 
     def self.backup_global_bundler_d
+      return unless global_bundler_d_dir.exist?
+
       FileUtils.rm_rf(global_bundler_d_backup_dir)
-      FileUtils.mv(global_bundler_d_dir, global_bundler_d_backup_dir) if global_bundler_d_dir.exist?
+      FileUtils.mv(global_bundler_d_dir, global_bundler_d_backup_dir)
     end
 
     def self.restore_global_bundler_d
+      return unless global_bundler_d_backup_dir.exist?
+
       FileUtils.rm_rf(global_bundler_d_dir)
-      FileUtils.mv(global_bundler_d_backup_dir, global_bundler_d_dir) if global_bundler_d_backup_dir.exist?
+      FileUtils.mv(global_bundler_d_backup_dir, global_bundler_d_dir)
     end
 
     attr_reader :out, :err, :process_status
