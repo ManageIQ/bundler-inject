@@ -3,14 +3,21 @@ require "open3"
 
 module Spec
   module Helpers
-    def self.bundler_version
-      return @bundler_version if defined?(@bundler_version)
-      versions = Bundler.with_clean_env do
+    def self.bundler_versions
+      @bundler_versions ||= Bundler.with_clean_env do
         `gem list bundler`.lines.grep(/^bundler /).first.scan(/\d+\.\d+\.\d+/)
       end
+    end
+
+    def self.bundler_version
+      return @bundler_version if defined?(@bundler_version)
+
+      versions = bundler_versions
+
       to_find = ENV["TEST_BUNDLER_VERSION"] || ENV["BUNDLER_VERSION"]
-      @bundler_version = versions.detect { |v| v.include?(to_find) }
-      raise "Unable to find bundler version: #{to_find.inspect}" if @bundler_version.nil?
+      @bundler_version = versions.detect { |v| v.start_with?(to_find.to_s) }
+      raise ArgumentError, "Unable to find bundler version: #{to_find.inspect}" if @bundler_version.nil?
+
       @bundler_version
     end
 
