@@ -4,8 +4,11 @@ require "open3"
 module Spec
   module Helpers
     def self.bundler_versions
-      @bundler_versions ||= Bundler.with_clean_env do
-        `gem list bundler`.lines.grep(/^bundler /).first.scan(/\d+\.\d+\.\d+/)
+      @bundler_versions ||= begin
+        versions = with_unbundled_env do
+          `gem list bundler`.lines.grep(/^bundler /).first.scan(/\d+\.\d+\.\d+/)
+        end
+        versions.reject { |v| v < "2" }
       end
     end
 
@@ -36,6 +39,11 @@ module Spec
     #
     def self.bundler_cli_version
       "_#{bundler_version}_"
+    end
+
+    def self.with_unbundled_env(&block)
+      # NOTE: Needed for 2.0 support; when we drop 2.0, this method can go away.
+      Bundler.send(Bundler.respond_to?(:with_unbundled_env) ? :with_unbundled_env : :with_clean_env, &block)
     end
 
     def self.global_bundler_d_dir
@@ -110,7 +118,7 @@ module Spec
 
     def raw_bundle(command, verbose: false, env: {})
       command = "bundle #{Helpers.bundler_cli_version} #{command} #{"--verbose" if verbose}".strip
-      out, err, process_status = Bundler.with_clean_env do
+      out, err, process_status = Helpers.with_unbundled_env do
         Open3.capture3(env, command, :chdir => app_dir)
       end
       return command, out, err, process_status
