@@ -143,8 +143,7 @@ RSpec.describe Bundler::Inject do
           F
           bundle(:update, expect_error: true)
 
-          stream = bundler_short_version.split(".").first == "1" ? out : err
-          expect(stream).to include "Trying to override unknown gem \"omg\""
+          expect(err).to include "Trying to override unknown gem \"omg\""
         end
 
         it "with ENV['BUNDLE_BUNDLER_INJECT__DISABLE_WARN_OVERRIDE_GEM'] = 'true'" do

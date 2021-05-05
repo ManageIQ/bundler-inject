@@ -36,6 +36,7 @@ RSpec.configure do |config|
     end
 
     puts
+    puts "Detected bundler versions: #{Spec::Helpers.bundler_versions.join(", ")}".light_yellow
     puts "Using bundler #{Spec::Helpers.bundler_version}".light_yellow
 
     Spec::Helpers.backup_global_bundler_d
