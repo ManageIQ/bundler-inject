@@ -111,7 +111,8 @@ module Spec
     end
 
     def lockfile
-      file = app_dir.join("Gemfile.lock")
+      lock_name = Bundler.settings["bundler_inject.enable_pristine"] ? "Gemfile.lock.local" : "Gemfile.lock"
+      file = app_dir.join(lock_name)
       Bundler::LockfileParser.new(file.read) if file.exist?
     end
 
