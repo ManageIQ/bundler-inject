@@ -113,6 +113,7 @@ module Bundler
           ENV['BUNDLER_INJECT__DISABLE_OVERRIDE'] = 'true'
 
           pristine_definition = Bundler::Dsl.evaluate(@gemfiles.first, Bundler.default_lockfile, original_unlock)
+          pristine_definition.resolve_remotely! if pristine_definition.missing_specs?
           pristine_definition.lock(Bundler.default_lockfile, *args)
 
           ENV['BUNDLER_INJECT__DISABLE_OVERRIDE'] = original_disable
