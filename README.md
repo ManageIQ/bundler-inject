@@ -3,7 +3,6 @@
 [![Build Status](https://travis-ci.org/ManageIQ/bundler-inject.svg?branch=master)](https://travis-ci.org/ManageIQ/bundler-inject)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e4650d6dd7cbcd981057/maintainability)](https://codeclimate.com/github/ManageIQ/bundler-inject/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/e4650d6dd7cbcd981057/test_coverage)](https://codeclimate.com/github/ManageIQ/bundler-inject/test_coverage)
-[![Security](https://hakiri.io/github/ManageIQ/bundler-inject/master.svg)](https://hakiri.io/github/ManageIQ/bundler-inject/master)
 
 **bundler-inject** is a [bundler plugin](https://bundler.io/guides/bundler_plugins.html)
 that allows a developer to extend a project with their own personal gems and/or
