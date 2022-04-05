@@ -162,13 +162,5 @@ module Spec
         File.write(".bundler.d/#{filename}", content)
       end
     end
-
-    def extract_rack_version(path = nil)
-      unless path
-        _, path, _, _ = raw_bundle("show rack")
-        path = Pathname.new(path.chomp)
-      end
-      path.expand_path.join("lib/rack/version.rb").read[/RELEASE += +([\"\'])([\d][\w\.]+)\1/, 2]
-    end
   end
 end
