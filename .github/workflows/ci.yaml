@@ -15,12 +15,12 @@ jobs:
         - '2.7'
         - '3.0'
         bundler-version:
-        - '2.1.4'
-        - '2.2.33'
-        - '2.3.10'
+        - '2.1'
+        - '2.2'
+        - '2.3'
         include:
         - ruby-version: '2.6'
-          bundler-version: '2.0.2'
+          bundler-version: '2.0'
     env:
       TEST_BUNDLER_VERSION: ${{ matrix.bundler-version }}
       CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
@@ -35,6 +35,6 @@ jobs:
     - name: Run tests
       run: bundle exec rake
     - name: Report code coverage
-      if: ${{ github.ref == 'refs/heads/master' && matrix.ruby-version == '3.0' && matrix.bundler-version == '2.3.10' }}
+      if: ${{ github.ref == 'refs/heads/master' && matrix.ruby-version == '3.0' && matrix.bundler-version == '2.3' }}
       continue-on-error: true
       uses: paambaati/codeclimate-action@v3.0.0
