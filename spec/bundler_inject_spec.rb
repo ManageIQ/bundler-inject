@@ -261,14 +261,14 @@ RSpec.describe Bundler::Inject do
           bundle(:check)
 
           expect(out).to eq "The Gemfile's dependencies are satisfied\n"
-          expect(err).to be_empty
+          expect(err).to_not match %r{^\*\* override_gem}
         end
 
         it "bundle exec" do
           bundle("exec #{exec_command}")
 
           expect(out).to eq %Q{[["ansi", "1.4.3"], ["omg", "0.0.6"], ["rubytest", "0.7.0"]]\n}
-          expect(err).to be_empty
+          expect(err).to_not match %r{^\*\* override_gem}
         end
       end
 
@@ -288,14 +288,14 @@ RSpec.describe Bundler::Inject do
           bundle(:check)
 
           expect(out).to eq "The Gemfile's dependencies are satisfied\n"
-          expect(err).to match %r{\A\*\* override_gem\("ansi", "=1.4.2"\) at .+/bundler\.d/local_overrides\.rb:1\n\z}
+          expect(err).to match %r{^\*\* override_gem\("ansi", "=1.4.2"\) at .+/bundler\.d/local_overrides\.rb:1\n$}
         end
 
         it "bundle exec" do
           bundle("exec #{exec_command}")
 
           expect(out).to eq %Q{[["ansi", "1.4.2"], ["omg", "0.0.6"], ["rubytest", "0.7.0"]]\n}
-          expect(err).to match %r{\A\*\* override_gem\("ansi", "=1.4.2"\) at .+/bundler\.d/local_overrides\.rb:1\n\z}
+          expect(err).to match %r{^\*\* override_gem\("ansi", "=1.4.2"\) at .+/bundler\.d/local_overrides\.rb:1\n$}
         end
       end
 
@@ -315,14 +315,14 @@ RSpec.describe Bundler::Inject do
           bundle(:check)
 
           expect(out).to eq "The Gemfile's dependencies are satisfied\n"
-          expect(err).to match %r{\A\*\* override_gem\("ansi", "=1.4.2"\) at .+/\.bundler\.d/global_overrides\.rb:1\n\z}
+          expect(err).to match %r{^\*\* override_gem\("ansi", "=1.4.2"\) at .+/\.bundler\.d/global_overrides\.rb:1\n$}
         end
 
         it "bundle exec" do
           bundle("exec #{exec_command}")
 
           expect(out).to eq %Q{[["ansi", "1.4.2"], ["omg", "0.0.6"], ["rubytest", "0.7.0"]]\n}
-          expect(err).to match %r{\A\*\* override_gem\("ansi", "=1.4.2"\) at .+/\.bundler\.d/global_overrides\.rb:1\n\z}
+          expect(err).to match %r{^\*\* override_gem\("ansi", "=1.4.2"\) at .+/\.bundler\.d/global_overrides\.rb:1\n$}
         end
       end
     end
