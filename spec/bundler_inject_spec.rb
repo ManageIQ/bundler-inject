@@ -6,13 +6,12 @@
 # with ansi 1.4.3 in the base Gemfile. omg 0.0.6 is an additional gem that also
 # has no dependencies.
 RSpec.describe Bundler::Inject do
+  let(:bundler_inject_root) { Pathname.new(__dir__).join("..").expand_path.to_s }
   let(:base_gemfile) do
-    bundler_inject_root = Pathname.new(__dir__).join("..").expand_path
-
     <<~G.chomp
       source "https://rubygems.org"
 
-      plugin "bundler-inject", :git => #{bundler_inject_root.to_s.inspect}, :ref => "HEAD"
+      plugin "bundler-inject", :git => #{bundler_inject_root.inspect}, :ref => "HEAD"
       require File.join(Bundler::Plugin.index.load_paths("bundler-inject")[0], "bundler-inject") rescue nil
     G
   end
@@ -340,7 +339,13 @@ RSpec.describe Bundler::Inject do
     it "installs the plugin" do
       bundle(:update)
 
-      expect(out).to include "Using bundler-inject #{Bundler::Inject::VERSION}"
+      expect(out).to include("Fetching #{bundler_inject_root}")
+
+      # bundler 2.4.17 removed the "Using" statements in https://github.com/rubygems/rubygems/pull/6804
+      if Gem::Version.new(bundler_version) < Gem::Version.new("2.4.17")
+        expect(out).to include "Using bundler-inject #{Bundler::Inject::VERSION}"
+      end
+
       expect(out).to include "Installed plugin bundler-inject"
     end
 
@@ -361,7 +366,13 @@ RSpec.describe Bundler::Inject do
     it "does not reinstall the plugin" do
       bundle(:update)
 
-      expect(out).to include "Using bundler-inject #{Bundler::Inject::VERSION}"
+      expect(out).to include("Fetching #{bundler_inject_root}")
+
+      # bundler 2.4.17 removed the "Using" statements in https://github.com/rubygems/rubygems/pull/6804
+      if Gem::Version.new(bundler_version) < Gem::Version.new("2.4.17")
+        expect(out).to include "Using bundler-inject #{Bundler::Inject::VERSION}"
+      end
+
       expect(out).to_not include "Installed plugin bundler-inject"
     end
 
