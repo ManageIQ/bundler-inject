@@ -66,7 +66,7 @@ module Bundler
       end
 
       def extract_version_opts(args)
-        args.last.is_a?(Hash) ? [args[0..-2], args[-1]] : [args, {}]
+        args.last.kind_of?(Hash) ? [args[0..-2], args[-1]] : [args, {}]
       end
 
       def warn_override_gem(calling_file, name, args)
