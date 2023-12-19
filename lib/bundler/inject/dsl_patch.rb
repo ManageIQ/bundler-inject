@@ -8,7 +8,7 @@ module Bundler
         calling_file = "#{calling_loc.path}:#{calling_loc.lineno}"
 
         remove_dependencies_and_sources(dependency)
-        expand_gem_path(args, calling_file)
+        expand_gem_path(name, args, calling_file)
         gem(name, *args).tap do
           warn_override_gem(calling_file, name, args)
         end
@@ -59,10 +59,17 @@ module Bundler
         end
       end
 
-      def expand_gem_path(args, calling_file)
+      # Determine the path for the gem
+      #
+      # This is used when an override has no options or a path is specified
+      # This path is turned into an absolute path
+      def expand_gem_path(name, args, calling_file)
+        args << {:path => name} if args.empty?
         return unless args.last.kind_of?(Hash) && args.last[:path]
 
-        args.last[:path] = File.expand_path(args.last[:path], File.dirname(calling_file))
+        possible_paths = [File.dirname(calling_file)] + bundler_inject_gem_path
+        full_path = possible_paths.map { |p| File.expand_path(args.last[:path], p) }.detect { |f| File.exist?(f) }
+        args.last[:path] = full_path if full_path
       end
 
       def extract_version_opts(args)
@@ -97,6 +104,22 @@ module Bundler
           Bundler.ui.debug("Injecting #{f}...")
           eval_gemfile(f)
         end
+      end
+
+      # Path to search for override gems
+      #
+      # The gem path can be set in two ways:
+      #
+      # - Via bundler's Bundler::Settings
+      #
+      #     bundle config bundler_inject.gem_path ~/src:~/gems_src
+      #
+      # - Via an environment variable
+      #
+      #     BUNDLE_BUNDLER_INJECT__GEM_PATH=~/src:~/gems_src
+      #
+      def bundler_inject_gem_path
+        @bundler_inject_gem_path ||= (Bundler.settings["bundler_inject.gem_path"] || "").split(File::PATH_SEPARATOR)
       end
     end
   end
