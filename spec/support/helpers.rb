@@ -17,7 +17,7 @@ module Spec
 
       versions = bundler_versions
 
-      to_find = ENV["TEST_BUNDLER_VERSION"] || ENV["BUNDLER_VERSION"]
+      to_find = ENV.fetch("TEST_BUNDLER_VERSION", nil) || ENV.fetch("BUNDLER_VERSION", nil)
       @bundler_version = versions.detect { |v| v.start_with?(to_find.to_s) }
       raise ArgumentError, "Unable to find bundler version: #{to_find.inspect}" if @bundler_version.nil?
 
