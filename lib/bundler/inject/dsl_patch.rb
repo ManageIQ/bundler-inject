@@ -94,7 +94,7 @@ module Bundler
 
       def load_bundler_d(dir)
         Dir.glob(File.join(dir, '*.rb')).sort.each do |f|
-          Bundler.ui.debug "Injecting #{f}..."
+          Bundler.ui.debug("Injecting #{f}...")
           eval_gemfile(f)
         end
       end

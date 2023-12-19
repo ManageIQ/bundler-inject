@@ -59,7 +59,7 @@ RSpec.describe Bundler::Inject do
         it "with no files to inject" do
           bundle(:update, :verbose => true)
 
-          expect(out).to_not match /^Injecting /
+          expect(out).to_not match(/^Injecting /)
           expect(lockfile_specs).to eq [["ansi", "1.4.3"]]
         end
       end
