@@ -129,7 +129,7 @@ module Spec
     end
 
     def bundle(command, expect_error: false, verbose: false, env: {})
-      command, @out, @err, @process_status = raw_bundle(command, verbose: verbose, env: env)
+      command, @out, @err, @process_status = raw_bundle(command, :verbose => verbose, :env => env)
       if expect_error
         expect(@process_status.exitstatus).to_not eq(0), "#{command.inspect} succeeded but was not expected to."
       else
