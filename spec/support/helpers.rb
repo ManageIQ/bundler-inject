@@ -84,6 +84,7 @@ module Spec
 
     def rm_app_dir
       return unless @app_dir
+
       FileUtils.rm_rf(@app_dir)
       @app_dir = nil
     end
@@ -117,6 +118,7 @@ module Spec
 
     def lockfile_specs
       return unless (lf = lockfile)
+
       lf.specs.map { |s| [s.name, s.version.to_s] }
     end
 

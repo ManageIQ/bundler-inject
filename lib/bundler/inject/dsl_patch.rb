@@ -61,6 +61,7 @@ module Bundler
 
       def expand_gem_path(args, calling_file)
         return unless args.last.kind_of?(Hash) && args.last[:path]
+
         args.last[:path] = File.expand_path(args.last[:path], File.dirname(calling_file))
       end
 
