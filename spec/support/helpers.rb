@@ -17,7 +17,7 @@ module Spec
 
       versions = bundler_versions
 
-      to_find = ENV["TEST_BUNDLER_VERSION"] || ENV["BUNDLER_VERSION"]
+      to_find = ENV.fetch("TEST_BUNDLER_VERSION", nil) || ENV.fetch("BUNDLER_VERSION", nil)
       @bundler_version = versions.detect { |v| v.start_with?(to_find.to_s) }
       raise ArgumentError, "Unable to find bundler version: #{to_find.inspect}" if @bundler_version.nil?
 
@@ -84,6 +84,7 @@ module Spec
 
     def rm_app_dir
       return unless @app_dir
+
       FileUtils.rm_rf(@app_dir)
       @app_dir = nil
     end
@@ -117,6 +118,7 @@ module Spec
 
     def lockfile_specs
       return unless (lf = lockfile)
+
       lf.specs.map { |s| [s.name, s.version.to_s] }
     end
 
@@ -129,7 +131,7 @@ module Spec
     end
 
     def bundle(command, expect_error: false, verbose: false, env: {})
-      command, @out, @err, @process_status = raw_bundle(command, verbose: verbose, env: env)
+      command, @out, @err, @process_status = raw_bundle(command, :verbose => verbose, :env => env)
       if expect_error
         expect(@process_status.exitstatus).to_not eq(0), "#{command.inspect} succeeded but was not expected to."
       else

@@ -61,11 +61,12 @@ module Bundler
 
       def expand_gem_path(args, calling_file)
         return unless args.last.kind_of?(Hash) && args.last[:path]
+
         args.last[:path] = File.expand_path(args.last[:path], File.dirname(calling_file))
       end
 
       def extract_version_opts(args)
-        args.last.is_a?(Hash) ? [args[0..-2], args[-1]] : [args, {}]
+        args.last.kind_of?(Hash) ? [args[0..-2], args[-1]] : [args, {}]
       end
 
       def warn_override_gem(calling_file, name, args)
@@ -82,7 +83,7 @@ module Bundler
       end
 
       def load_global_bundler_d
-        if ENV["HOME"]
+        if Dir.home
           load_bundler_d(File.join(Dir.home, ".bundler.d"))
         end
       end
@@ -93,7 +94,7 @@ module Bundler
 
       def load_bundler_d(dir)
         Dir.glob(File.join(dir, '*.rb')).sort.each do |f|
-          Bundler.ui.debug "Injecting #{f}..."
+          Bundler.ui.debug("Injecting #{f}...")
           eval_gemfile(f)
         end
       end

@@ -34,7 +34,7 @@ RSpec.describe Bundler::Inject do
         it "with verbose" do
           write_bundler_d_file ""
           write_global_bundler_d_file ""
-          bundle(:update, verbose: true)
+          bundle(:update, :verbose => true)
 
           expect(out).to match injecting_local_override
           expect(out).to match injecting_global_override
@@ -42,7 +42,7 @@ RSpec.describe Bundler::Inject do
 
         it "with local file only" do
           write_bundler_d_file ""
-          bundle(:update, verbose: true)
+          bundle(:update, :verbose => true)
 
           expect(out).to match injecting_local_override
           expect(out).to_not match injecting_global_override
@@ -50,16 +50,16 @@ RSpec.describe Bundler::Inject do
 
         it "with global file only" do
           write_global_bundler_d_file ""
-          bundle(:update, verbose: true)
+          bundle(:update, :verbose => true)
 
           expect(out).to_not match injecting_local_override
           expect(out).to match injecting_global_override
         end
 
         it "with no files to inject" do
-          bundle(:update, verbose: true)
+          bundle(:update, :verbose => true)
 
-          expect(out).to_not match /^Injecting /
+          expect(out).to_not match(/^Injecting /)
           expect(lockfile_specs).to eq [["ansi", "1.4.3"]]
         end
       end
@@ -147,7 +147,7 @@ RSpec.describe Bundler::Inject do
           write_bundler_d_file <<~F
             override_gem "omg"
           F
-          bundle(:update, expect_error: true)
+          bundle(:update, :expect_error => true)
 
           expect(err).to include "Trying to override unknown gem \"omg\""
         end
@@ -157,7 +157,7 @@ RSpec.describe Bundler::Inject do
             override_gem "ansi", "=1.4.2"
           F
           env_var = "BUNDLE_BUNDLER_INJECT__DISABLE_WARN_OVERRIDE_GEM"
-          bundle(:update, env: { env_var => "true" })
+          bundle(:update, :env => {env_var => "true"})
 
           expect(lockfile_specs).to eq [["ansi", "1.4.2"]]
           expect(err).to_not match %r{^\*\* override_gem}
@@ -167,7 +167,7 @@ RSpec.describe Bundler::Inject do
           write_bundler_d_file <<~F
             override_gem "ansi", "=1.4.2"
           F
-          bundle(:update, env: { "RAILS_ENV" => "production" })
+          bundle(:update, :env => {"RAILS_ENV" => "production"})
 
           expect(lockfile_specs).to eq [["ansi", "1.4.2"]]
           expect(err).to_not match %r{^\*\* override_gem}
@@ -178,7 +178,7 @@ RSpec.describe Bundler::Inject do
             override_gem "ansi", "=1.4.2"
           F
           env_var = "BUNDLE_BUNDLER_INJECT__DISABLE_WARN_OVERRIDE_GEM"
-          bundle(:update, env: { "RAILS_ENV" => "production", env_var => 'false' })
+          bundle(:update, :env => {"RAILS_ENV" => "production", env_var => 'false'})
 
           expect(lockfile_specs).to eq [["ansi", "1.4.2"]]
           expect(err).to match %r{^\*\* override_gem\("ansi", "=1.4.2"\) at .+/bundler\.d/local_overrides\.rb:1$}
