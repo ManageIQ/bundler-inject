@@ -28,6 +28,12 @@ module Bundler
       end
 
       def to_definition(lockfile, unlock)
+        return super if ENV['BUNDLER_INJECT__DISABLE_OVERRIDE']
+
+        original_unlock = unlock.dup
+        original_lockfile = lockfile
+        lockfile = Pathname.new("#{lockfile}.local") if enable_pristine?(lockfile)
+
         calling_loc = caller_locations(1, 1).first
         if calling_loc.path.include?("bundler/dsl.rb") && calling_loc.base_label == "evaluate"
           load_global_bundler_d
@@ -35,13 +41,16 @@ module Bundler
           # @gemfiles doesn't exist on Bundler <= 1.15, and we can't get at @gemfile
           #   by this point, but there's a high probability it's just "Gemfile",
           #   or slightly more accurately, the lockfile name without the ".lock" bit.
-          targets = defined?(@gemfiles) ? @gemfiles : [Pathname.new(lockfile.to_s.chomp(".lock"))]
+          targets = defined?(@gemfiles) ? @gemfiles : [Pathname.new(original_lockfile.to_s.chomp(".lock"))]
 
           targets.reverse_each do |gemfile|
             load_local_bundler_d(File.dirname(gemfile))
           end
         end
-        super
+
+        super(lockfile, unlock).tap do |definition|
+          add_pristine_lock(definition, original_unlock) if enable_pristine?(original_lockfile)
+        end
       end
 
       private
@@ -97,6 +106,24 @@ module Bundler
           Bundler.ui.debug("Injecting #{f}...")
           eval_gemfile(f)
         end
+      end
+
+      def add_pristine_lock(definition, original_unlock)
+        definition.define_singleton_method(:lock) do |file, *args|
+          original_disable = ENV['BUNDLER_INJECT__DISABLE_OVERRIDE']
+          ENV['BUNDLER_INJECT__DISABLE_OVERRIDE'] = 'true'
+
+          pristine_definition = Bundler::Dsl.evaluate(@gemfiles.first, Bundler.default_lockfile, original_unlock)
+          pristine_definition.resolve_remotely! if pristine_definition.missing_specs?
+          pristine_definition.lock(Bundler.default_lockfile, *args)
+
+          ENV['BUNDLER_INJECT__DISABLE_OVERRIDE'] = original_disable
+          super(Pathname.new("#{file}.local"), *args)
+        end
+      end
+
+      def enable_pristine?(lockfile)
+        lockfile == Bundler.default_lockfile && Bundler.settings["bundler_inject.enable_pristine"]
       end
     end
   end

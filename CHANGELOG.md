@@ -7,6 +7,8 @@ a nice looking [Changelog](http://keepachangelog.com).
 
 ## Version [HEAD] <sub><sup>now</sub></sup>
 
+* Adds ability to pristine original Gemfile.lock
+
 ## Version [2.0.0] <sub><sup>2021-05-01</sub></sup>
 
 * **BREAKING**: Drops support for bundler below 2.0
