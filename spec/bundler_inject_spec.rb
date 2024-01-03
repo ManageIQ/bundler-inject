@@ -117,8 +117,8 @@ RSpec.describe Bundler::Inject do
           expect(err).to match %r{^\*\* override_gem\("ansi", :git=>"https://github.com/rubyworks/ansi"\) at .+/bundler\.d/local_overrides\.rb:1$}
         end
 
-        it "with a path" do
-          with_path_based_gem("https://github.com/rubyworks/ansi") do |path|
+        it "with an absolute path" do
+          with_path_based_gem("https://github.com/rubyworks/ansi", "the_gem") do |path|
             write_bundler_d_file <<~F
               override_gem "ansi", :path => #{path.to_s.inspect}
             F
@@ -129,8 +129,8 @@ RSpec.describe Bundler::Inject do
           end
         end
 
-        it "with a path that includes ~" do
-          with_path_based_gem("https://github.com/rubyworks/ansi") do |path|
+        it "with a full path that includes ~" do
+          with_path_based_gem("https://github.com/rubyworks/ansi", "the_gem") do |path|
             path = Pathname.new("~/#{path.relative_path_from(Pathname.new("~").expand_path)}")
 
             write_bundler_d_file <<~F
