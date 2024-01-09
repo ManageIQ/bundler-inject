@@ -93,14 +93,14 @@ module Spec
       FileUtils.rm_rf(Helpers.global_bundler_d_dir)
     end
 
-    def with_path_based_gem(source_repo)
+    def with_path_based_gem(source_repo, dir_name)
       Dir.mktmpdir do |path|
         path = Pathname.new(path)
         Dir.chdir(path) do
-          out, status = Open3.capture2e("git clone --depth 1 #{source_repo} the_gem")
+          out, status = Open3.capture2e("git clone --depth 1 #{source_repo} #{dir_name}")
           raise "An error occured while cloning #{source_repo.inspect}...\n#{out}" unless status.exitstatus == 0
         end
-        path = path.join("the_gem")
+        path = path.join(dir_name)
 
         yield path
       end

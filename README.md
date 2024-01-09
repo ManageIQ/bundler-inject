@@ -79,6 +79,8 @@ original declaration.
 
 ## Configuration
 
+### Disabling warnings
+
 To disable warnings that are output to the console when `override_gem` or
 `ensure_gem` is in use, you can update a bundler setting:
 
@@ -94,6 +96,32 @@ $ export BUNDLE_BUNDLER_INJECT__DISABLE_WARN_OVERRIDE_GEM=true
 
 There is a fallback for those that will check the `RAILS_ENV` environment
 variable, and will disable the warning when in `"production"`.
+
+### Specifying gem source directories
+
+Many developers checkout gems into a single directory for enhancement.
+Instead of specifying the full path of gems every time, specify a gem path
+to locate these directories. This can be defined with a bundler setting:
+
+```console
+$ bundle config bundler_inject.gem_path ~/src:~/gem_src
+```
+
+or use an environment variable:
+
+```console
+$ export BUNDLE_BUNDLER_INJECT__GEM_PATH=~/src:~/gem_src
+```
+
+An override will find a gem in either of these two directories or in the directory
+where the Gemfile override is located.
+
+```Gemfile
+# located in ~/src/ansi
+override_gem "ansi"
+# located in $PWD/mime_override
+override_gem "mime/type", path: "mime_override"
+```
 
 ## What is this sorcery?
 
