@@ -64,12 +64,15 @@ module Bundler
       # This is used when an override has no options or a path is specified
       # This path is turned into an absolute path
       def expand_gem_path(name, args, calling_file)
-        args << {:path => name} if args.empty?
-        return unless args.last.kind_of?(Hash) && args.last[:path]
+        return unless args.empty? || args.last.kind_of?(Hash) && (args.last.empty? || args.last[:path])
 
+        path = args.empty? ? name : args.last[:path]
         possible_paths = [File.dirname(calling_file)] + bundler_inject_gem_path
-        full_path = possible_paths.map { |p| File.expand_path(args.last[:path], p) }.detect { |f| File.exist?(f) }
-        args.last[:path] = full_path if full_path
+        full_path = possible_paths.map { |p| File.expand_path(path, p) }.detect { |f| File.exist?(f) }
+        if full_path
+          args << {} if args.empty?
+          args.last[:path] = full_path
+        end
       end
 
       def extract_version_opts(args)
