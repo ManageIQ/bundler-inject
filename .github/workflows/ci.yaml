@@ -42,4 +42,4 @@ jobs:
     - name: Report code coverage
       if: ${{ github.ref == 'refs/heads/master' && matrix.ruby-version == '3.2' && matrix.bundler-version == '2.4' }}
       continue-on-error: true
-      uses: paambaati/codeclimate-action@v8
+      uses: paambaati/codeclimate-action@v9
