@@ -24,6 +24,19 @@ jobs:
         - '2.5'
         - '2.6'
         - '2.7'
+        exclude:
+        - ruby-version: '2.7'
+          bundler-version: '2.5'
+        - ruby-version: '2.7'
+          bundler-version: '2.6'
+        - ruby-version: '3.0'
+          bundler-version: '2.6'
+        - ruby-version: '2.7'
+          bundler-version: '2.7'
+        - ruby-version: '3.0'
+          bundler-version: '2.7'
+        - ruby-version: '3.1'
+          bundler-version: '2.7'
     env:
       TEST_BUNDLER_VERSION: ${{ matrix.bundler-version }}
       CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
