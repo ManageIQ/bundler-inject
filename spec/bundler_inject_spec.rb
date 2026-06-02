@@ -2,9 +2,9 @@
 # test various versions and overrides. rubytest 0.7.0 depends on ansi >= 0 which
 # has no dependencies.  This allows us to manipulate the various versions of
 # ansi without introducing additional dependencies complicating the test.
-# ansi 1.4.2, 1.4.3, 1.5.0 are the three latest versions, and most tests "start"
-# with ansi 1.4.3 in the base Gemfile. omg 0.0.6 is an additional gem that also
-# has no dependencies.
+# ansi 1.4.2, 1.4.3, 1.5.0, and 1.6.0 are available versions, and most tests
+# "start" with ansi 1.4.3 in the base Gemfile. omg 0.0.6 is an additional gem
+# that also has no dependencies.
 RSpec.describe Bundler::Inject do
   let(:bundler_inject_root) { Pathname.new(__dir__).join("..").expand_path.to_s }
   let(:base_gemfile) do
@@ -113,7 +113,7 @@ RSpec.describe Bundler::Inject do
           F
           bundle(:update)
 
-          expect(lockfile_specs).to eq [["ansi", "1.5.0"]]
+          expect(lockfile_specs).to eq [["ansi", "1.6.0"]]
           expect(err).to match %r{^\*\* override_gem\("ansi", (git: |:git=>)"https://github.com/rubyworks/ansi"\) at .+/bundler\.d/local_overrides\.rb:1$}
         end
 
@@ -124,7 +124,7 @@ RSpec.describe Bundler::Inject do
             F
             bundle(:update)
 
-            expect(lockfile_specs).to eq [["ansi", "1.5.0"]]
+            expect(lockfile_specs).to eq [["ansi", "1.6.0"]]
             expect(err).to match %r{^\*\* override_gem\("ansi", (path: |:path=>)#{path.to_s.inspect}\) at .+/bundler\.d/local_overrides\.rb:1$}
           end
         end
@@ -138,7 +138,7 @@ RSpec.describe Bundler::Inject do
             F
             bundle(:update)
 
-            expect(lockfile_specs).to eq [["ansi", "1.5.0"]]
+            expect(lockfile_specs).to eq [["ansi", "1.6.0"]]
             expect(err).to match %r{^\*\* override_gem\("ansi", (path: |:path=>)#{path.expand_path.to_s.inspect}\) at .+/bundler\.d/local_overrides\.rb:1$}
           end
         end
@@ -150,7 +150,7 @@ RSpec.describe Bundler::Inject do
             F
             bundle(:update, :env => {"BUNDLE_BUNDLER_INJECT__GEM_PATH" => path.dirname.to_s})
 
-            expect(lockfile_specs).to eq [["ansi", "1.5.0"]]
+            expect(lockfile_specs).to eq [["ansi", "1.6.0"]]
             expect(err).to match %r{^\*\* override_gem\("ansi", (path: |:path=>)#{path.expand_path.to_s.inspect}\) at .+/bundler\.d/local_overrides\.rb:1$}
           end
         end
@@ -162,7 +162,7 @@ RSpec.describe Bundler::Inject do
             F
             bundle(:update, :env => {"BUNDLE_BUNDLER_INJECT__GEM_PATH" => path.dirname.to_s})
 
-            expect(lockfile_specs).to eq [["ansi", "1.5.0"]]
+            expect(lockfile_specs).to eq [["ansi", "1.6.0"]]
             expect(err).to match %r{^\*\* override_gem\("ansi", (path: |:path=>)#{path.expand_path.to_s.inspect}\) at .+/bundler\.d/local_overrides\.rb:1$}
           end
         end
@@ -175,7 +175,7 @@ RSpec.describe Bundler::Inject do
               F
               bundle(:update, :env => {"BUNDLE_BUNDLER_INJECT__GEM_PATH" => "/nonexistent-directory/:#{empty_dir.to_s}:#{path.dirname.to_s}"})
 
-              expect(lockfile_specs).to eq [["ansi", "1.5.0"]]
+              expect(lockfile_specs).to eq [["ansi", "1.6.0"]]
               expect(err).to match %r{^\*\* override_gem\("ansi", (path: |:path=>)#{path.expand_path.to_s.inspect}\) at .+/bundler\.d/local_overrides\.rb:1$}
             end
           end
@@ -270,7 +270,7 @@ RSpec.describe Bundler::Inject do
           F
           bundle(:update)
 
-          expect(lockfile_specs).to eq [["ansi", "1.5.0"]]
+          expect(lockfile_specs).to eq [["ansi", "1.6.0"]]
           expect(err).to match %r{^\*\* override_gem\("ansi", (git: |:git=>)"https://github.com/rubyworks/ansi"\) at .+/\.bundler\.d/global_overrides\.rb:1$}
         end
       end
